@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+
+<body>
+  My Todo App
+
+  <todo-app></todo-app>
+
+  <script type="module">
+    import { LitElement, html } from 'https://unpkg.com/lit-element?module';
+
+    const author = 'open-wc';
+    const homepage = 'https://open-wc.org/';
+    const footerTemplate = html`
+      <footer>Made with love by <a href="${homepage}">${author}</a></footer>
+    `;
+
+    class TodoApp extends LitElement {
+      connectedCallback() {
+        super.connectedCallback();      // IT IS MANDATORY to avoid bugs
+        this.todos = [
+          { text: 'Do A', finished: true },
+          { text: 'Do B', finished: false },
+          { text: 'Do C', finished: false },
+        ];
+        console.log('lit element connected!');
+      }
+
+      render() {
+        return html`
+          <h1>Todo app</h1>
+
+          <input id="addTodoInput" placeholder="Name" />
+          <button @click="${this._addTodo}">Add</button>
+          
+          <ol>
+            ${this.todos.map(
+              todo => html`
+                <li>${todo.text} (${todo.finished ? 'Finished' : 'Unfinished'})</li>
+              `,
+            )}
+          </ol>
+          
+          ${footerTemplate}
+        `;
+      }
+    }
+
+    customElements.define('todo-app', TodoApp);
+  </script>
+</body>
+</html>
