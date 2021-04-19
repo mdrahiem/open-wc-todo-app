@@ -23,6 +23,12 @@
     `;
 
     class TodoApp extends LitElement {
+      static get properties() {
+        return {
+          todos: { type: Array },
+        };
+      }
+      
       connectedCallback() {
         super.connectedCallback();      // IT IS MANDATORY to avoid bugs
         this.todos = [
@@ -31,6 +37,14 @@
           { text: 'Do C', finished: false },
         ];
         console.log('lit element connected!');
+      }
+
+      _addTodo() {
+        const input = this.shadowRoot.getElementById('addTodoInput');
+        const text = input.value;
+        input.value = '';
+
+        this.todos = [...this.todos, { text, finished: false }];
       }
 
       render() {
