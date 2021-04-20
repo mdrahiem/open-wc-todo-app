@@ -6,20 +6,23 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Document</title>
+  <link rel="stylesheet" href="./styles.css">
 </head>
 
 <body>
-  My Todo App
-
-  <todo-app></todo-app>
+  <div class="wrapper">
+    <todo-app></todo-app>
+  </div>
 
   <script type="module">
-    import { LitElement, html } from 'https://unpkg.com/lit-element?module';
+    import { LitElement, html, css } from 'https://unpkg.com/lit-element?module';
+    import './todo-list.js';
+    import './add-todo-form.js';
 
-    const author = 'open-wc';
-    const homepage = 'https://open-wc.org/';
+    const author = '@mdrahiem';
+    const homepage = 'http://github.com/mdrahiem/';
     const footerTemplate = html`
-      <footer>Made with love by <a href="${homepage}">${author}</a></footer>
+    <div class="footer">Made with 🧡 by <a href="${homepage}">${author}</a></div>
     `;
 
     class TodoApp extends LitElement {
@@ -27,6 +30,45 @@
         return {
           todos: { type: Array },
         };
+      }
+
+      static get styles() {
+        return css`
+          header {
+            font-size: 30px;
+            font-weight: 600;
+            text-align: center;
+          }
+          .footer {
+            text-align: center;
+            padding: 10px;
+          }
+          .footer a {
+            padding: 6px 10px;
+            border-radius: 3px;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-weight: 400;
+            font-size: 16px;
+            margin-left: 5px;
+            background: #8E49E8;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+          }
+          .stats {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px;
+          }
+          .stats div {
+            background: #91bcf1;
+            padding: 5px 10px;
+            border-radius: 3px;
+            color: black;
+          }
+        `;
       }
       
       connectedCallback() {
@@ -36,31 +78,48 @@
           { text: 'Do B', finished: false },
           { text: 'Do C', finished: false },
         ];
-        console.log('lit element connected!');
       }
 
-      _addTodo() {
-        const input = this.shadowRoot.getElementById('addTodoInput');
-        const text = input.value;
-        input.value = '';
+      _addTodo(e) {
+        this.todos = [...this.todos, { text: e.detail, finished: false }];
+      }
 
-        this.todos = [...this.todos, { text, finished: false }];
+      _removeTodo(e) {
+        this.todos = this.todos.filter(todo => todo !== e.detail);
+      }
+
+      _changeTodoFinished(e) {
+        const { changedTodo, finished } = e.detail;
+
+        this.todos = this.todos.map((todo) => {
+          if (todo !== changedTodo) {
+            return todo;
+          }
+          return { ...changedTodo, finished };
+        });
       }
 
       render() {
-        return html`
-          <h1>Todo app</h1>
+        const finishedCount = this.todos.filter(e => e.finished).length;
+        const unfinishedCount = this.todos.length - finishedCount;
 
-          <input id="addTodoInput" placeholder="Name" />
-          <button @click="${this._addTodo}">Add</button>
+        return html`
+          <header>📝 Todo app</header>
+
+          <add-todo-form
+            @add-todo="${this._addTodo}"
+          ></add-todo-form>
           
-          <ol>
-            ${this.todos.map(
-              todo => html`
-                <li>${todo.text} (${todo.finished ? 'Finished' : 'Unfinished'})</li>
-              `,
-            )}
-          </ol>
+          <todo-list
+            .todos="${this.todos}"
+            @change-todo-finished="${this._changeTodoFinished}"
+            @remove-todo="${this._removeTodo}"
+          ></todo-list>
+
+          <div class="stats">
+            <div>✅ Finished: ${finishedCount}</div>
+            <div>❌ Unfinished: ${unfinishedCount}</div>
+          </div>
           
           ${footerTemplate}
         `;
