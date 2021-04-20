@@ -49,7 +49,8 @@ class AddTodoForm extends LitElement {
   }
 
 
-  _addTodo() {
+  _addTodo(e) {
+    e.preventDefault();
     const input = this.shadowRoot.getElementById('addTodoInput');
     const text = input.value;
     input.value = '';
@@ -58,10 +59,10 @@ class AddTodoForm extends LitElement {
 
   render() {
     return html`
-      <div class="inputField">
+      <form class="inputField" @submit="${e => this._addTodo(e)}">
         <input id="addTodoInput" placeholder="Name" />
-        <button @click="${this._addTodo}">Add</button>
-      </div>
+        <button type="submit">Add</button>
+      </form>
     `
   }
 }
