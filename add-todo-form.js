@@ -1,6 +1,10 @@
 import { LitElement, html, css } from 'https://unpkg.com/lit-element?module';
 
 class AddTodoForm extends LitElement {
+  constructor() {
+    super();
+  }
+
   static get styles() {
     return css`
       .inputField{
@@ -34,7 +38,6 @@ class AddTodoForm extends LitElement {
         cursor: pointer;
         border-radius: 3px;
         opacity: 0.6;
-        pointer-events: none;
         transition: all 0.3s ease;
       }
       .inputField button:hover,
@@ -50,7 +53,9 @@ class AddTodoForm extends LitElement {
 
 
   _addTodo(e) {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
     const input = this.shadowRoot.getElementById('addTodoInput');
     const text = input.value;
     input.value = '';
@@ -61,7 +66,7 @@ class AddTodoForm extends LitElement {
     return html`
       <form class="inputField" @submit="${e => this._addTodo(e)}">
         <input id="addTodoInput" placeholder="Name" />
-        <button type="submit">Add</button>
+        <button type="button" @click="${this._addTodo}">Add</button>
       </form>
     `
   }
